@@ -1,0 +1,4 @@
+Command executed:
+- ansible all -m apt -a "update_cache=true" --become --ask-become-pass
+- ansible all -m apt -a "name=vim-nox" --become --ask-beome-pass
+- ansible all -m apt -a "name=snapd state=latest" --become --ask-become-pass
