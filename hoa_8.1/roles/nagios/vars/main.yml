@@ -1,0 +1,6 @@
+---
+apache_service:
+  Ubuntu: apache2
+  CentOS: httpd
+nagios_service: nagios
+

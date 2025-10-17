@@ -1,0 +1,84 @@
+---
+# --- Update Package Repository ---
+- name: Update apt cache (Ubuntu)
+  apt:
+    update_cache: yes
+  when: ansible_distribution == "Ubuntu"
+
+- name: Update dnf cache (CentOS)
+  dnf:
+    update_cache: yes
+  when: ansible_distribution == "CentOS"
+
+# --- Install Required Packages for Ubuntu ---
+- name: Install Nagios and dependencies (Ubuntu)
+  apt:
+    name:
+      - apache2
+      - apache2-utils
+      - php
+      - nagios4
+      - nagios-plugins
+    state: present
+  when: ansible_distribution == "Ubuntu"
+
+# --- Enable EPEL Repo for CentOS ---
+- name: Enable EPEL repository (CentOS)
+  dnf:
+    name: epel-release
+    state: present
+  when: ansible_distribution == "CentOS"
+
+# --- Install Minimal Nagios Plugins for CentOS (Avoid nagios-plugins-all) ---
+- name: Install Nagios and dependencies (CentOS)
+  dnf:
+    name:
+      - nagios
+      - nagios-plugins
+      - nagios-plugins-load
+      - nagios-plugins-http
+      - nagios-plugins-ping
+      - nagios-plugins-disk
+      - nagios-plugins-procs
+      - httpd
+      - php
+    state: present
+  when: ansible_distribution == "CentOS"
+
+# --- Start and Enable Apache ---
+- name: Start and enable Apache (Ubuntu)
+  service:
+    name: apache2
+    state: started
+    enabled: yes
+  when: ansible_distribution == "Ubuntu"
+
+- name: Start and enable Apache (CentOS)
+  service:
+    name: httpd
+    state: started
+    enabled: yes
+  when: ansible_distribution == "CentOS"
+
+# --- Start and Enable Nagios ---
+- name: Start and enable Nagios service
+  service:
+    name: nagios
+    state: started
+    enabled: yes
+
+# --- Firewall Configuration (Optional) ---
+- name: Allow HTTP service on CentOS firewall
+  firewalld:
+    service: http
+    permanent: yes
+    state: enabled
+    immediate: yes
+  when: ansible_distribution == "CentOS"
+
+# --- Display Success Message ---
+- name: Display Nagios installation success
+  debug:
+    msg: >
+      Nagios installed successfully on {{ ansible_distribution }}.
+      Access it via http://{{ ansible_host }}/nagios or /nagios4
